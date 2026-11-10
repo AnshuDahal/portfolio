@@ -45,3 +45,104 @@ if (dialog) {
         opener ?.focus();
     });
 }
+const board = document.querySelector('.vision-board');
+if (board) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(min-width: 801px) and (hover: hover) and (pointer: fine)');
+    const motionButton = document.getElementById('board-motion');
+    let paused = reducedMotion.matches;
+    let drag = null;
+    let frame = 0;
+    let targetX = 0, targetY = 0;
+    const positions = new Map();
+    const pieces = [...board.querySelectorAll('.board-piece')];
+    function updateMotion() {
+        board.classList.toggle('still', paused);
+        motionButton.setAttribute('aria-pressed', String(paused));
+        motionButton.setAttribute('aria-label', paused ? 'Enable 3D movement' : 'Pause 3D movement');
+        motionButton.title = motionButton.getAttribute('aria-label');
+        board.style.setProperty('--view-x', '0deg');
+        board.style.setProperty('--view-y', '0deg');
+    }
+    updateMotion();
+    reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; updateMotion(); });
+    motionButton.addEventListener('click', () => { paused = !paused; updateMotion(); });
+    const light = document.getElementById('board-light');
+    light.addEventListener('click', () => {
+        const night = document.body.classList.toggle('moonlit');
+        light.setAttribute('aria-pressed', String(night));
+        light.setAttribute('aria-label', night ? 'Switch to daylight' : 'Switch to moonlight');
+        light.title = light.getAttribute('aria-label');
+    });
+    function resetPositions() {
+        pieces.forEach(piece => {
+            piece.style.setProperty('--drag-x', '0px');
+            piece.style.setProperty('--drag-y', '0px');
+        });
+        positions.clear();
+    }
+    document.getElementById('board-reset').addEventListener('click', resetPositions);
+    board.addEventListener('pointermove', event => {
+        if (!finePointer.matches) return;
+        if (drag && event.pointerId === drag.id) {
+            const x = event.clientX - drag.startX;
+            const y = event.clientY - drag.startY;
+            if (!drag.moved && Math.hypot(x,y) < 7) return;
+            drag.moved = true;
+            drag.piece.classList.add('is-dragging');
+            drag.piece.setPointerCapture(event.pointerId);
+            const dx = Math.max(-90, Math.min(90, drag.x + x));
+            const dy = Math.max(-70, Math.min(70, drag.y + y));
+            positions.set(drag.piece, { x:dx, y:dy });
+            drag.piece.style.setProperty('--drag-x', dx + 'px');
+            drag.piece.style.setProperty('--drag-y', dy + 'px');
+            return;
+        }
+        if (paused) return;
+        const rect = board.getBoundingClientRect();
+        targetX = ((event.clientY - rect.top) / rect.height - .5) * -7;
+        targetY = ((event.clientX - rect.left) / rect.width - .5) * 8;
+        if (!frame) frame = requestAnimationFrame(() => {
+            board.style.setProperty('--view-x', targetX + 'deg');
+            board.style.setProperty('--view-y', targetY + 'deg');
+            board.style.setProperty('--light-x', (50 + targetY * 5) + '%');
+            frame = 0;
+        });
+    });
+    // Fine-pointer dragging never captures a tap or interferes with touch scrolling.
+    pieces.filter(piece => piece.matches('button')).forEach(piece => {
+        piece.addEventListener('pointerdown', event => {
+            if (!finePointer.matches || paused || event.button !== 0) return;
+            const position = positions.get(piece) || {x:0,y:0};
+            drag = {piece,id:event.pointerId,startX:event.clientX,startY:event.clientY,x:position.x,y:position.y,moved:false};
+        });
+        piece.addEventListener('click', event => {
+            if (piece.dataset.dragged === 'true') {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                delete piece.dataset.dragged;
+            }
+        }, true);
+    });
+    function endDrag(event) {
+        if (!drag || drag.id !== event.pointerId) return;
+        drag.piece.classList.remove('is-dragging');
+        if (drag.moved) {
+            drag.piece.dataset.dragged = 'true';
+            const piece = drag.piece;
+            setTimeout(() => delete piece.dataset.dragged, 0);
+        }
+        if (drag.piece.hasPointerCapture(event.pointerId)) drag.piece.releasePointerCapture(event.pointerId);
+        drag = null;
+    }
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
+    board.addEventListener('pointerleave', () => {
+        if (drag || paused) return;
+        board.style.setProperty('--view-x', '0deg');
+        board.style.setProperty('--view-y', '0deg');
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { resetPositions(); drag = null; }
+    });
+}

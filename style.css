@@ -26,3 +26,6 @@ body{background:radial-gradient(ellipse at 100% 0,#e6d9e5 0,transparent 42%),var
 .contact{background:#d9c3c9}.contact-heading h2 em{color:#754c61}
 .life-photo{box-shadow:3px 7px 20px #493b4820}.board-piece{transition:transform .4s ease,box-shadow .4s ease}.paper-link,.underlined{transition:color .25s ease}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.board-piece,.paper-link,.underlined{transition:none}}
+
+/* Give the shorter copy room without leaving empty decorative columns. */
+.board-intro+.vision-board,.nav+.vision-board{margin-top:25px}.vision-board{margin-top:32px}.collection-hero{grid-template-columns:1fr;gap:0;padding-block:60px 35px}.collection-hero h1{margin-bottom:0}.life-strip{grid-template-columns:1fr 1fr;max-width:760px;width:100%;margin-inline:auto}.case-visual{padding-bottom:12px}.case-metrics{height:auto;min-height:320px}#note-label:empty{display:none}.projects-section{padding-top:75px}.identity-piece .identity-copy{margin-top:20px}

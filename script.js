@@ -19,11 +19,11 @@ document.addEventListener('keydown', e => {
 const year = document.getElementById('year');
 if (year) year.textContent = new Date().getFullYear();
 const notes = {
-    learning: { title: 'Forever a student.', label: 'A NOTE ON CURIOSITY', body: 'I’m studious, but I also just really like finding things out. Computer science and data science give me a way to turn questions into experiments, and experiments into something useful. There’s always another idea I want to understand.' },
-    hello: { title: 'Glad you’re here.', label: 'THE PERSON BEHIND THE BOARD', body: 'Hi, I’m Anshu! I care about my work, love a good laugh, and enjoy trying new things. This board brings together a little bit of everything I love, from research and building things to exploring new places. And yes, I’ll always stop to say hi to a dog.' },
-    explore: { title: 'Take the scenic route.', label: 'A NOTE FROM OUTSIDE', body: 'I love exploring and hiking. A new trail, a different view, a little time away from a screen. I like the feeling of going somewhere unfamiliar and noticing things along the way. Curiosity follows me outside, too.' },
-    music: { title: 'Make room for joy.', label: 'BEYOND THE KEYBOARD', body: 'I play piano, and I love music and dancing. Sometimes I want to sit with a melody; sometimes I just want to move. These are parts of my life I want to make room for, alongside the work I do.' },
-    dogs: { title: 'Definitely a dog person.', label: 'A VERY IMPORTANT PERSONAL DETAIL', body: 'Some introductions don’t need a long explanation: I love dogs. This little clipping is here because a portfolio should have room for the things that make you smile, too.' }
+    learning: { title: 'Always learning.', label: '', body: 'I study computer science and data science at Truman State.' },
+    hello: { title: 'Hi, I’m Anshu.', label: '', body: 'I’m a student at Truman State. I work on AI projects and health research.' },
+    explore: { title: 'Outside, for a bit.', label: '', body: 'I like getting outside and taking photos, especially of sunsets and the moon.' },
+    music: { title: 'A little music.', label: '', body: 'I play piano and love dancing. There’s usually music somewhere in my day.' },
+    dogs: { title: 'A dog person.', label: '', body: 'Always happy to meet a dog.' }
 };
 const dialog = document.getElementById('note-dialog');
 if (dialog) {
